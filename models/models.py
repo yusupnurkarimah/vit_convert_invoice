@@ -74,19 +74,29 @@ class Import(models.Model):
 
 		for record in records:
 			partner_id = object_partner.search([('name', '=', record.name)])
-			account_id = object_account.search([('code', '=', '11110001')])
-			product_id = object_product.search([('name', '=', 'PokokCicilan')])
+			product_pokok   = object_product.search([('name', '=', 'Produk Pokok')])
+			product_cicilan = object_product.search([('name', '=', 'Produk Cicilan')])
+			account_pokok   = product_pokok.property_account_income_id
+			account_cicilan = product_cicilan.property_account_income_id
 
 
 			date_invoice = record.periode
 
-			invoice_line_ids = [(0, 0, {
-				'product_id': product_id.id,  # product_id dari variabel search object
-				'name': 'cicilan',
-				'quantity': 1,
-				'price_unit': record.pokok,
-				'account_id': account_id.id,
-			})]
+			invoice_line_ids = [
+				(0, 0, {
+					'product_id'    : product_pokok.id,  # product_id dari variabel search object_product
+					'name'          : product_pokok.name,
+					'quantity'      : 1,
+					'price_unit'    : record.pokok,
+					'account_id'    : account_pokok.id,
+				}),
+				(0, 0, {
+					'product_id'    : product_cicilan.id,
+					'name'          : product_cicilan.name,
+					'quantity'      : 1,
+					'price_unit'    : record.pokok,
+					'account_id'    : account_cicilan.id,
+				}),]
 
 			data = {
 				'partner_id'      : partner_id.id,
